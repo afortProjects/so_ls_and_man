@@ -1,10 +1,13 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <pwd.h>
 #include <grp.h>
 #include <time.h>
 #include <string.h>
+#include <errno.h>
 
 #define RESET   "\x1B[0m"
 #define RED     "\x1B[31m"
@@ -15,13 +18,20 @@
 #define CYAN    "\x1B[36m"
 
 void printPermissions(mode_t mode) {
+    // If it is directory add d in the beginning
     printf((S_ISDIR(mode)) ? CYAN "d" : "-");
+
+    // Permissions for user (owner)
     printf((mode & S_IRUSR) ? GREEN "r" : "-");
     printf((mode & S_IWUSR) ? GREEN "w" : "-");
     printf((mode & S_IXUSR) ? GREEN "x" : "-");
+    
+    // Permissions for group
     printf((mode & S_IRGRP) ? YELLOW "r" : "-");
     printf((mode & S_IWGRP) ? YELLOW "w" : "-");
     printf((mode & S_IXGRP) ? YELLOW "x" : "-");
+
+    // Permissions for others
     printf((mode & S_IROTH) ? MAGENTA "r" : "-");
     printf((mode & S_IWOTH) ? MAGENTA "w" : "-");
     printf((mode & S_IXOTH) ? MAGENTA "x" : "-");
@@ -134,6 +144,18 @@ int main(int argc, char *argv[]) {
 
     // Check command-line arguments
     if (argc > 1) {
+        if (checkForArgument(argc, argv, "--author")) {
+            printf("Wojciech Trapkowski - 193176\n");
+            return 0;
+        }
+        if (checkForArgument(argc, argv, "--version")) {
+            printf("custom_ls - 0.1\n");
+            return 0;
+        }
+        if (checkForArgument(argc, argv, "--help")) {
+            system("man ls");
+            return 0;
+        }
         if (checkForArgument(argc, argv, "-R")){
             recursive = 1;
         } 
