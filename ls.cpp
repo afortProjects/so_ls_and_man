@@ -99,9 +99,12 @@ void listDirectory(const char *path, int recursive, int showFileInfo, int level)
             continue;
         }
         printf(RESET);
+
         // Print file information if requested
+
         if (showFileInfo) {
             printFileInfo(entry->d_name, entry, &fileStat);
+            printf("\n");
         } else {
             printf("%s%s\n", GREEN, entry->d_name);
         }
@@ -110,10 +113,18 @@ void listDirectory(const char *path, int recursive, int showFileInfo, int level)
         if (recursive && S_ISDIR(fileStat.st_mode)) {
             listDirectory(fullpath, recursive, showFileInfo, level + 1);
         }
+
     }
 
     // Close the directory
     closedir(dir);
+}
+
+bool checkForArgument(int argc, char* argv[], char* argument) {
+    for(int i=0; i<argc; i++) {
+        if(strcmp(argv[i], argument) == 0) return true;
+    }
+    return false;
 }
 
 int main(int argc, char *argv[]) {
@@ -123,20 +134,16 @@ int main(int argc, char *argv[]) {
 
     // Check command-line arguments
     if (argc > 1) {
-        if (strcmp(argv[1], "-R") == 0) {
+        if (checkForArgument(argc, argv, "-R")){
             recursive = 1;
-            if (argc > 2 && strcmp(argv[2], "-l") == 0) {
-                showFileInfo = 1;
-            }
-        } else if (strcmp(argv[1], "-l") == 0) {
+        } 
+        if (checkForArgument(argc, argv, "-l")) {
             showFileInfo = 1;
-            if (argc > 2 && strcmp(argv[2], "-R") == 0) {
-                recursive = 1;
-            }
-        } else {
-            path = argv[1];
-            if (argc > 2 && strcmp(argv[2], "-l") == 0) {
-                showFileInfo = 1;
+        }
+        //Scan for folder path
+        for(int i=0; i<argc; i++) {
+            if(argv[i][0] != '-') {
+                path = argv[i];
             }
         }
     }
