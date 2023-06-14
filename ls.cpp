@@ -163,7 +163,7 @@ int main(int argc, char *argv[]) {
             showFileInfo = 1;
         }
         //Scan for folder path
-        for(int i=0; i<argc; i++) {
+        for(int i=1; i<argc; i++) {
             if(argv[i][0] != '-') {
                 path = argv[i];
             }
